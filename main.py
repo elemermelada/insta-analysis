@@ -17,11 +17,11 @@ def req_int(req):
 
 ## PARAM DEFINITION
 count = 99                                                      #nº OF USERS TO GRAB AT ONCE
-me = '36923518'                                                 #INSTAGRAM USER CODE
+me = '336923518'                                                #INSTAGRAM USER CODE
 head1 = '198387'                                                #x-asbd-id
-head2 = 'F12tTvKMu8LhgIKCxTdpscoH42cF7t9X'                      #x-csrftoken
+head2 = 'gmEEiuqugChMe6nWYL9qS8RcNALSymFr'                      #x-csrftoken
 head3 = '936619743392459'                                       #x-ig-app-id
-head4 = 'hmac.AR0RIUxUnDNk-raCJddgxtYop_Lo-Rk1ZcuspO3MCreuCiAf' #x-ig-www-claim
+head4 = 'hmac.AR0RIUxUnDNk-raCJddgxtYop_Lo-Rk1ZcuspO3MCreuCli9' #x-ig-www-claim
 print('Using headers:', [head1,head2,head3,head4])
 
 ## INITIALIZE
@@ -40,7 +40,7 @@ followers = []
 
 #EXECUTE UNTIL ALL FOLLOWING ARE GRABBED
 while True:
-    driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/followers/?count=' + str(count) + '&max_id=' + str(max_id) + '&search_surface=follow_list_page')
+    driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/following/?count=' + str(count) + '&max_id=' + str(max_id))
     element = driver.find_element('tag name','pre')
     response = element.get_attribute('innerHTML')
     res_json = json.loads(response)
@@ -85,7 +85,7 @@ for friend_obj in myfollowing:
     textfile.write(json.dumps(followers))
     textfile.close()
 
-    print(friend + ' has ', len(followers), ' followers')
+    print(friend_obj['username'] + ' has ', len(followers), ' followers')
 
 
 input("End of code")
