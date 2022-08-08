@@ -2,6 +2,7 @@
 from seleniumwire import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import json
+import time
 
 #REQUEST INTERCEPTOR FUNCTION (ADDS CUSTOM HEADERS)
 def req_int(req):
@@ -39,18 +40,31 @@ driver.request_interceptor = req_int
 #MAKE A REQUEST AND GRAB RESPONSE
 friend = '4118873852'
 max_id = 1
-count = 10
-#EXECUTE UNTIL ALL FOLLOWERS ARE GRABBED (LAST RESPONSE HAS LESS 'USERS' THAN COUNT)
+count = 99
+followers = []
+
+#EXECUTE UNTIL ALL FOLLOWERS ARE GRABBED
 while True:
     driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/followers/?count=' + str(count) + '&max_id=' + str(max_id) + '&search_surface=follow_list_page')
     element = driver.find_element('tag name','pre')
     response = element.get_attribute('innerHTML')
     res_json = json.loads(response)
-    print(res_json["users"])
-
-    if res_json["users"] < count-1:
-
-
+    users = res_json["users"]
+    #LOOP THROUGH ALL NEW USERS AND APPEND THEM TO FRIEND'S FOLLOWERS
+    for u in users:
+        followers.append(u)
+        print('Users:',len(followers),end='\r')
+    #BREAK LOOP WHEN USERS IS 0
+    #if len(res_json["users"])<count:
+    #if not res_json["big_list"]):
+    if len(res_json["users"])==0:
+        break
     max_id = max_id + count
+    time.sleep(0.2)
 
+textfile = open(friend + '.json', 'w')
+textfile.write(json.dumps(followers))
+textfile.close()
+
+print(len(followers))
 input("End of code")
