@@ -15,56 +15,77 @@ def req_int(req):
     del req.headers['Referer']  
     req.headers['x-ig-www-claim'] = head4  
 
-## RUNTIME
+## PARAM DEFINITION
+count = 99                                                      #nº OF USERS TO GRAB AT ONCE
+me = '36923518'                                                 #INSTAGRAM USER CODE
+head1 = '198387'                                                #x-asbd-id
+head2 = 'Mq8zaku3nylpTQfTk9AsrPIARhswomP3'                      #x-csrftoken
+head3 = '936619743392459'                                       #x-ig-app-id
+head4 = 'hmac.AR0RIUxUnDNk-raCJddgxtYop_Lo-Rk1ZcuspO3MCreuCrfd' #x-ig-www-claim
+print('Using headers:', [head1,head2,head3,head4])
+
+## INITIALIZE
 #CREATE DRIVER AND INITIALIZE
 driver = webdriver.Chrome(ChromeDriverManager().install())
 driver.get('https://instagram.com')
 input('Login and press enter')
 
-#GRAB DESIRED HEADERS OR FALLBACK TO KNOWN HEADERS + SET INTERCEPTOR
-head1 = input('x-asbd-id: ')
-if head1 == '':
-    head1 = '198387'
-head2 = input('x-csrftoken: ')
-if head2 == '':
-    head2 = 'Mq8zaku3nylpTQfTk9AsrPIARhswomP3'
-head3 = input('x-ig-app-id: ')
-if head3 == '':
-    head3 = '936619743392459'
-head4 = input('x-ig-www-claim: ')
-if head4 == '':
-    head4 = 'hmac.AR0RIUxUnDNk-raCJddgxtYop_Lo-Rk1ZcuspO3MCreuCrfd'
-print('Using headers:', [head1,head2,head3,head4])
+#SET INTERCEPTOR
 driver.request_interceptor = req_int
 
-#MAKE A REQUEST AND GRAB RESPONSE
-friend = '4118873852'
+## GRAB ALL FOLLOWING FOR 'ME'
 max_id = 1
-count = 99
+friend = me
 followers = []
 
-#EXECUTE UNTIL ALL FOLLOWERS ARE GRABBED
+#EXECUTE UNTIL ALL FOLLOWING ARE GRABBED
 while True:
-    driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/followers/?count=' + str(count) + '&max_id=' + str(max_id) + '&search_surface=follow_list_page')
+    driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/following/?count=' + str(count) + '&max_id=' + str(max_id) + '&search_surface=follow_list_page')
     element = driver.find_element('tag name','pre')
     response = element.get_attribute('innerHTML')
     res_json = json.loads(response)
     users = res_json["users"]
-    #LOOP THROUGH ALL NEW USERS AND APPEND THEM TO FRIEND'S FOLLOWERS
+    #LOOP THROUGH ALL NEW USERS AND APPEND THEM TO ME'S FOLLOWING
     for u in users:
         followers.append(u)
         print('Users:',len(followers),end='\r')
-    #BREAK LOOP WHEN USERS IS 0
-    #if len(res_json["users"])<count:
-    #if not res_json["big_list"]):
-    if len(res_json["users"])==0:
+    #BREAK LOOP WHEN big_list IS FALSE
+    if not res_json["big_list"]:
         break
     max_id = max_id + count
     time.sleep(0.2)
 
-textfile = open(friend + '.json', 'w')
+myfollowing = followers.copy()
+textfile = open('ME_' + friend + '.json', 'w')
 textfile.write(json.dumps(followers))
 textfile.close()
 
-print(len(followers))
+print(len(followers), 'where obtained for your account')
+
+## GRAB ALL FOLLOWERS FOR EACH OF ME'S FRIENDS
+for friend_obj in myfollowing:
+    max_id = 1
+    friend = str(friend_obj['pk'])
+    followers = []
+    while True:
+        driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/followers/?count=' + str(count) + '&max_id=' + str(max_id) + '&search_surface=follow_list_page')
+        element = driver.find_element('tag name','pre')
+        response = element.get_attribute('innerHTML')
+        res_json = json.loads(response)
+        users = res_json["users"]
+        for u in users:
+            followers.append(u)
+            print('Users:',len(followers),end='\r')
+        if not res_json["big_list"]:
+            break
+        max_id = max_id + count
+        time.sleep(0.2)
+
+    textfile = open(friend_obj['username'] + '.json', 'w')
+    textfile.write(json.dumps(followers))
+    textfile.close()
+
+    print(friend + ' has ', len(followers), ' followers')
+
+
 input("End of code")
