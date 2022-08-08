@@ -3,6 +3,7 @@ from seleniumwire import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import json
 import time
+from os.path import exists
 
 #REQUEST INTERCEPTOR FUNCTION (ADDS CUSTOM HEADERS)
 def req_int(req):
@@ -18,7 +19,8 @@ def req_int(req):
 ## CONFIG
 conf = open("config.json", "r")
 conf_json = json.loads(conf.read())
-count = 99                  #nº OF USERS TO GRAB AT ONCE
+count = 12                  #nº OF USERS TO GRAB AT ONCE
+sleep = 1                   #SECONDS TO SLEEP
 me = conf_json['me']        #INSTAGRAM USER CODE
 head1 = conf_json['head1']  #x-asbd-id
 head2 = conf_json['head2']  #x-csrftoken
@@ -55,10 +57,10 @@ while True:
     if not res_json["big_list"]:
         break
     max_id = max_id + count
-    time.sleep(0.2)
+    time.sleep(sleep)
 
 myfollowing = followers.copy()
-textfile = open('export/ME_' + friend + '.json', 'w')
+textfile = open('ME.json', 'w')
 textfile.write(json.dumps(followers))
 textfile.close()
 
@@ -68,6 +70,8 @@ print(len(followers), 'where obtained for your account')
 for friend_obj in myfollowing:
     max_id = 1
     friend = str(friend_obj['pk'])
+    if exists('export/' + friend_obj["username"]):
+        continue
     followers = []
     while True:
         driver.get('https://i.instagram.com/api/v1/friendships/' + friend + '/followers/?count=' + str(count) + '&max_id=' + str(max_id) + '&search_surface=follow_list_page')
@@ -81,13 +85,12 @@ for friend_obj in myfollowing:
         if not res_json["big_list"]:
             break
         max_id = max_id + count
-        time.sleep(0.2)
+        time.sleep(sleep)
 
     textfile = open('export/' + friend_obj['username'] + '.json', 'w')
     textfile.write(json.dumps(followers))
     textfile.close()
 
     print(friend_obj['username'] + ' has ', len(followers), ' followers')
-
 
 input("End of code")
