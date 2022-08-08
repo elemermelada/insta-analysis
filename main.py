@@ -15,13 +15,15 @@ def req_int(req):
     del req.headers['Referer']  
     req.headers['x-ig-www-claim'] = head4  
 
-## PARAM DEFINITION
-count = 99                                                      #nº OF USERS TO GRAB AT ONCE
-me = '336923518'                                                #INSTAGRAM USER CODE
-head1 = '198387'                                                #x-asbd-id
-head2 = 'gmEEiuqugChMe6nWYL9qS8RcNALSymFr'                      #x-csrftoken
-head3 = '936619743392459'                                       #x-ig-app-id
-head4 = 'hmac.AR0RIUxUnDNk-raCJddgxtYop_Lo-Rk1ZcuspO3MCreuCli9' #x-ig-www-claim
+## CONFIG
+conf = open("config.json", "r")
+conf_json = json.loads(conf.read())
+count = 99                  #nº OF USERS TO GRAB AT ONCE
+me = conf_json['me']        #INSTAGRAM USER CODE
+head1 = conf_json['head1']  #x-asbd-id
+head2 = conf_json['head2']  #x-csrftoken
+head3 = conf_json['head3']  #x-ig-app-id
+head4 = conf_json['head4']  #x-ig-www-claim
 print('Using headers:', [head1,head2,head3,head4])
 
 ## INITIALIZE
@@ -56,7 +58,7 @@ while True:
     time.sleep(0.2)
 
 myfollowing = followers.copy()
-textfile = open('ME_' + friend + '.json', 'w')
+textfile = open('export/ME_' + friend + '.json', 'w')
 textfile.write(json.dumps(followers))
 textfile.close()
 
@@ -81,7 +83,7 @@ for friend_obj in myfollowing:
         max_id = max_id + count
         time.sleep(0.2)
 
-    textfile = open(friend_obj['username'] + '.json', 'w')
+    textfile = open('export/' + friend_obj['username'] + '.json', 'w')
     textfile.write(json.dumps(followers))
     textfile.close()
 
