@@ -20,7 +20,7 @@ def req_int(req):
 conf = open("config.json", "r")
 conf_json = json.loads(conf.read())
 count = 12                  #nº OF USERS TO GRAB AT ONCE
-sleep = 1                   #SECONDS TO SLEEP
+sleep = 10                   #SECONDS TO SLEEP
 me = conf_json['me']        #INSTAGRAM USER CODE
 head1 = conf_json['head1']  #x-asbd-id
 head2 = conf_json['head2']  #x-csrftoken
