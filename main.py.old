@@ -1,0 +1,20 @@
+# from seleniumwire import webdriver  
+from webdriver_manager.chrome import ChromeDriverManager
+
+# driver = webdriver.Chrome(ChromeDriverManager().install())
+
+# input("Dale")
+# print(driver.last_request)  
+
+from seleniumrequests import Chrome
+
+# Simple usage with built-in WebDrivers:
+webdriver = Chrome(ChromeDriverManager().install())
+webdriver.get("https://instagram.com")
+input("Login and press enter")
+#response = webdriver.request('GET', 'https://i.instagram.com/api/v1/friendships/4118873852/followers/?count=12&max_id=12&search_surface=follow_list_page')
+response = webdriver.execute_script('await fetch("https://i.instagram.com/api/v1/friendships/4118873852/followers/?count=12&search_surface=follow_list_page", {  "headers": {    "accept": "*/*",    "accept-language": "en,es-ES;q=0.9,es;q=0.8",    "sec-ch-ua": "\".Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"103\", \"Chromium\";v=\"103\"",    "sec-ch-ua-mobile": "?0",    "sec-ch-ua-platform": "\"Windows\"",    "sec-fetch-dest": "empty",    "sec-fetch-mode": "cors",    "sec-fetch-site": "same-site",    "sec-gpc": "1",    "x-asbd-id": "198387",    "x-csrftoken": "eocq9UPx1SxQ0M5wdtpWR4TO4iApcpzS",    "x-ig-app-id": "936619743392459",    "x-ig-www-claim": "hmac.AR0RIUxUnDNk-raCJddgxtYop_Lo-Rk1ZcuspO3MCreuCmw-"  },  "referrer": "https://www.instagram.com/",  "referrerPolicy": "strict-origin-when-cross-origin",  "body": null,  "method": "GET",  "mode": "cors",  "credentials": "include"});')
+
+print(response)
+
+input("END")
